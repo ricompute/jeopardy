@@ -1,6 +1,7 @@
 # Jeopardy! Game
 
-A web-based Jeopardy game that runs entirely in your browser. Upload a CSV file with your own questions and answers to play.
+A web-based Jeopardy game that runs entirely in your browser. Upload a CSV file
+with your own questions and answers to play.
 
 ![Jeopardy Game](https://img.shields.io/badge/Game-Jeopardy!-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -45,7 +46,7 @@ Answer 1.4,The answer
 ,
 Category 2,Another Category
 ...
-Final Jeopardy,
+Final Jeopardy Category,Your Final Category
 Final Jeopardy Prompt,Your final question
 Final Jeopardy Answer,The final answer
 ```
