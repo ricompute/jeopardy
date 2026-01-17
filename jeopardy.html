@@ -346,6 +346,16 @@
             letter-spacing: 4px;
         }
 
+        #final-category {
+            color: #FFFFFF;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-top: 40px;
+        }
+
         #final-text {
             color: #FFFFFF;
             font-size: clamp(2rem, 5vw, 4rem);
@@ -490,6 +500,7 @@
     <!-- Final Jeopardy Screens -->
     <div id="final-screen">
         <div id="final-title">FINAL JEOPARDY!</div>
+        <div id="final-category"></div>
         <div id="final-text"></div>
     </div>
 
@@ -555,14 +566,14 @@ Answer 5.3,
 Prompt 5.4,
 Answer 5.4,
 ,
-Final Jeopardy,
+Final Jeopardy Category,
 Final Jeopardy Prompt,
 Final Jeopardy Answer,`;
 
         // Game state
         let gameData = {
             categories: [],
-            finalJeopardy: { prompt: '', answer: '' },
+            finalJeopardy: { category: '', prompt: '', answer: '' },
             usedCells: new Set(),
             totalCells: 20,
             dailyDoubleCell: null
@@ -588,6 +599,7 @@ Final Jeopardy Answer,`;
         const timerDisplay = document.getElementById('timer-display');
         const finalScreen = document.getElementById('final-screen');
         const finalTitle = document.getElementById('final-title');
+        const finalCategory = document.getElementById('final-category');
         const finalText = document.getElementById('final-text');
         const gameOver = document.getElementById('game-over');
         const resetBtn = document.getElementById('reset-btn');
@@ -664,7 +676,7 @@ Final Jeopardy Answer,`;
             const lines = text.split('\n').map(line => line.trim()).filter(line => line);
             const categories = [];
             let currentCategory = null;
-            let finalJeopardy = { prompt: '', answer: '' };
+            let finalJeopardy = { category: '', prompt: '', answer: '' };
             let isFinalJeopardy = false;
 
             for (let i = 1; i < lines.length; i++) {
@@ -676,9 +688,9 @@ Final Jeopardy Answer,`;
                 const text = parts[1] ? parts[1].trim() : '';
 
                 if (label.toLowerCase().includes('final jeopardy')) {
-                    if (label.toLowerCase() === 'final jeopardy') {
-                        isFinalJeopardy = true;
-                        continue;
+                    isFinalJeopardy = true;
+                    if (label.toLowerCase().includes('category')) {
+                        finalJeopardy.category = text || '';
                     } else if (label.toLowerCase().includes('prompt')) {
                         finalJeopardy.prompt = text || label.replace(/final jeopardy prompt/i, '').trim();
                     } else if (label.toLowerCase().includes('answer')) {
@@ -735,40 +747,56 @@ Final Jeopardy Answer,`;
             return result;
         }
 
-        // Handle file
+        // Handle file with encoding detection
         function handleFile(file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                const text = event.target.result;
-                const parsed = parseCSV(text);
-
-                // Get timer settings
-                timerEnabled = timerEnabledCheckbox.checked;
-                if (timerPreset.value === 'custom') {
-                    timerDuration = parseInt(timerCustom.value) || 60;
+                let text = event.target.result;
+                
+                // Check for replacement characters (indicates wrong encoding)
+                if (text.includes('\uFFFD')) {
+                    // Try reading with Windows-1252 encoding (common for Excel files)
+                    const reader2 = new FileReader();
+                    reader2.onload = (event2) => {
+                        processCSV(event2.target.result);
+                    };
+                    reader2.readAsText(file, 'windows-1252');
                 } else {
-                    timerDuration = parseInt(timerPreset.value);
+                    processCSV(text);
                 }
-
-                gameData.categories = parsed.categories;
-                gameData.finalJeopardy = parsed.finalJeopardy;
-                gameData.usedCells = new Set();
-                gameData.totalCells = Math.min(
-                    parsed.categories.length * 4,
-                    parsed.categories.reduce((sum, cat) => sum + cat.prompts.length, 0)
-                );
-
-                // Select random Daily Double
-                const numCategories = Math.min(parsed.categories.length, 5);
-                const randomCol = Math.floor(Math.random() * numCategories);
-                const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
-                const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
-                gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
-
-                buildBoard();
-                showScreen('board');
             };
-            reader.readAsText(file);
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // Process CSV content
+        function processCSV(text) {
+            const parsed = parseCSV(text);
+
+            // Get timer settings
+            timerEnabled = timerEnabledCheckbox.checked;
+            if (timerPreset.value === 'custom') {
+                timerDuration = parseInt(timerCustom.value) || 60;
+            } else {
+                timerDuration = parseInt(timerPreset.value);
+            }
+
+            gameData.categories = parsed.categories;
+            gameData.finalJeopardy = parsed.finalJeopardy;
+            gameData.usedCells = new Set();
+            gameData.totalCells = Math.min(
+                parsed.categories.length * 4,
+                parsed.categories.reduce((sum, cat) => sum + cat.prompts.length, 0)
+            );
+
+            // Select random Daily Double
+            const numCategories = Math.min(parsed.categories.length, 5);
+            const randomCol = Math.floor(Math.random() * numCategories);
+            const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
+            const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
+            gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
+
+            buildBoard();
+            showScreen('board');
         }
 
         // Build game board
@@ -901,17 +929,21 @@ Final Jeopardy Answer,`;
                     break;
                 case 'final-title':
                     finalTitle.style.display = 'block';
+                    finalCategory.style.display = 'block';
+                    finalCategory.textContent = gameData.finalJeopardy.category;
                     finalText.style.display = 'none';
                     finalScreen.classList.add('active');
                     break;
                 case 'final-prompt':
                     finalTitle.style.display = 'none';
+                    finalCategory.style.display = 'none';
                     finalText.style.display = 'block';
                     finalText.textContent = gameData.finalJeopardy.prompt;
                     finalScreen.classList.add('active');
                     break;
                 case 'final-answer':
                     finalTitle.style.display = 'none';
+                    finalCategory.style.display = 'none';
                     finalText.style.display = 'block';
                     finalText.textContent = gameData.finalJeopardy.answer;
                     finalScreen.classList.add('active');
@@ -974,7 +1006,7 @@ Final Jeopardy Answer,`;
             stopTimer();
             gameData = {
                 categories: [],
-                finalJeopardy: { prompt: '', answer: '' },
+                finalJeopardy: { category: '', prompt: '', answer: '' },
                 usedCells: new Set(),
                 totalCells: 20,
                 dailyDoubleCell: null
