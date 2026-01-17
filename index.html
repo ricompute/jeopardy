@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica Neue', sans-serif;
+            background-color: #060CE9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Upload Screen */
+        #upload-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #upload-screen h1 {
+            color: #FFCC00;
+            font-size: 4rem;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .upload-container {
+            background: linear-gradient(180deg, #1a1aff 0%, #0000aa 100%);
+            border: 4px solid #FFCC00;
+            border-radius: 10px;
+            padding: 40px 60px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container.drag-over {
+            border-color: #fff;
+            background: linear-gradient(180deg, #2a2aff 0%, #1111cc 100%);
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
+        }
+
+        .upload-container p {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .upload-container .drag-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+
+        #csv-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(180deg, #FFDD33 0%, #CC9900 100%);
+            color: #060CE9;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.5);
+        }
+
+        .download-link {
+            color: #FFCC00;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .download-link:hover {
+            color: #fff;
+        }
+
+        /* Timer Settings */
+        .timer-settings {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .timer-settings label {
+            color: white;
+            font-size: 1rem;
+        }
+
+        .timer-settings input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .timer-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .timer-options select, .timer-options input[type="number"] {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 2px solid #FFCC00;
+            border-radius: 5px;
+            background: #0000aa;
+            color: white;
+            cursor: pointer;
+        }
+
+        .timer-options input[type="number"] {
+            width: 80px;
+        }
+
+        .timer-options select:focus, .timer-options input[type="number"]:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        /* Game Board - 16:9 optimized */
+        #game-board {
+            display: none;
+            width: 100%;
+            height: 100%;
+            max-width: calc(100vh * 16 / 9);
+            max-height: calc(100vw * 9 / 16);
+            aspect-ratio: 16 / 9;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: 1.2fr repeat(4, 1fr);
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            padding: 10px;
+        }
+
+        .category-cell {
+            background: linear-gradient(180deg, #1a1aff 0%, #0000aa 100%);
+            border: 3px solid #000;
+            color: #FFFFFF;
+            font-size: clamp(0.7rem, 1.8vw, 1.4rem);
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            cursor: default;
+            line-height: 1.2;
+        }
+
+        .value-cell {
+            background: linear-gradient(180deg, #1a1aff 0%, #0000aa 100%);
+            border: 3px solid #000;
+            color: #FFCC00;
+            font-size: clamp(1.5rem, 4vw, 3.5rem);
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+        }
+
+        .value-cell:hover:not(.used) {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+        }
+
+        .value-cell.used {
+            opacity: 0.25;
+            cursor: default;
+            background: linear-gradient(180deg, #0a0a66 0%, #000055 100%);
+        }
+
+        /* Prompt/Answer Screen */
+        #prompt-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #060CE9;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        #prompt-screen.active {
+            display: flex;
+        }
+
+        #prompt-text {
+            color: #FFFFFF;
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            max-width: 90%;
+            line-height: 1.3;
+        }
+
+        #prompt-value {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFCC00;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Timer Display */
+        #timer-display {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFCC00;
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        #timer-display.warning {
+            color: #FF6600;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        #timer-display.critical {
+            color: #FF0000;
+            animation: pulse 0.25s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* Daily Double Screen */
+        #daily-double-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #060CE9;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        #daily-double-screen.active {
+            display: flex;
+        }
+
+        #daily-double-text {
+            color: #FFCC00;
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-style: italic;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 6px 6px 12px rgba(0,0,0,0.7);
+            animation: dailyDoublePulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes dailyDoublePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Final Jeopardy */
+        #final-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #060CE9;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        #final-screen.active {
+            display: flex;
+        }
+
+        #final-title {
+            color: #FFCC00;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-style: italic;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            letter-spacing: 4px;
+        }
+
+        #final-text {
+            color: #FFFFFF;
+            font-size: clamp(2rem, 5vw, 4rem);
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            max-width: 90%;
+            line-height: 1.3;
+        }
+
+        /* Game Over */
+        #game-over {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #060CE9;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        #game-over.active {
+            display: flex;
+        }
+
+        #game-over h1 {
+            color: #FFCC00;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-style: italic;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+        }
+
+        .play-again-btn {
+            background: linear-gradient(180deg, #FFDD33 0%, #CC9900 100%);
+            color: #060CE9;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .play-again-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.5);
+        }
+
+        /* Reset button */
+        #reset-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,204,0,0.2);
+            color: #FFCC00;
+            border: 2px solid #FFCC00;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s;
+            z-index: 1000;
+        }
+
+        #reset-btn:hover {
+            background: rgba(255,204,0,0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Fullscreen optimization */
+        @media (min-aspect-ratio: 16/9) {
+            #game-board {
+                height: 90vh;
+                width: calc(90vh * 16 / 9);
+            }
+        }
+
+        @media (max-aspect-ratio: 16/9) {
+            #game-board {
+                width: 95vw;
+                height: calc(95vw * 9 / 16);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Upload Screen -->
+    <div id="upload-screen">
+        <h1>JEOPARDY!</h1>
+        <div class="upload-container" id="drop-zone">
+            <p>Upload your Jeopardy game CSV file to begin</p>
+            <input type="file" id="csv-input" accept=".csv">
+            <button class="upload-btn" onclick="document.getElementById('csv-input').click()">
+                Choose CSV File
+            </button>
+            <p class="drag-text">or drag and drop a CSV file here</p>
+            
+            <div class="timer-settings">
+                <input type="checkbox" id="timer-enabled" checked>
+                <label for="timer-enabled">Enable Timer</label>
+                <div class="timer-options">
+                    <select id="timer-preset">
+                        <option value="30">30 seconds</option>
+                        <option value="60" selected>60 seconds</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <input type="number" id="timer-custom" min="5" max="300" value="60" class="hidden" placeholder="sec">
+                </div>
+            </div>
+        </div>
+        <a class="download-link" id="download-template">Download CSV Template</a>
+    </div>
+
+    <!-- Game Board -->
+    <div id="game-board">
+        <div class="board-grid" id="board-grid"></div>
+    </div>
+
+    <!-- Daily Double Screen -->
+    <div id="daily-double-screen">
+        <div id="daily-double-text">DAILY<br>DOUBLE!</div>
+    </div>
+
+    <!-- Prompt/Answer Screen -->
+    <div id="prompt-screen">
+        <div id="prompt-value"></div>
+        <div id="prompt-text"></div>
+        <div id="timer-display"></div>
+    </div>
+
+    <!-- Final Jeopardy Screens -->
+    <div id="final-screen">
+        <div id="final-title">FINAL JEOPARDY!</div>
+        <div id="final-text"></div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over">
+        <h1>GAME OVER!</h1>
+        <button class="play-again-btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <!-- Reset Button -->
+    <button id="reset-btn" class="hidden" onclick="resetGame()">New Game</button>
+
+    <script>
+        // CSV Template
+        const csvTemplate = `Label,Text
+Category 1,
+Prompt 1.1,
+Answer 1.1,
+Prompt 1.2,
+Answer 1.2,
+Prompt 1.3,
+Answer 1.3,
+Prompt 1.4,
+Answer 1.4,
+,
+Category 2,
+Prompt 2.1,
+Answer 2.1,
+Prompt 2.2,
+Answer 2.2,
+Prompt 2.3,
+Answer 2.3,
+Prompt 2.4,
+Answer 2.4,
+,
+Category 3,
+Prompt 3.1,
+Answer 3.1,
+Prompt 3.2,
+Answer 3.2,
+Prompt 3.3,
+Answer 3.3,
+Prompt 3.4,
+Answer 3.4,
+,
+Category 4,
+Prompt 4.1,
+Answer 4.1,
+Prompt 4.2,
+Answer 4.2,
+Prompt 4.3,
+Answer 4.3,
+Prompt 4.4,
+Answer 4.4,
+,
+Category 5,
+Prompt 5.1,
+Answer 5.1,
+Prompt 5.2,
+Answer 5.2,
+Prompt 5.3,
+Answer 5.3,
+Prompt 5.4,
+Answer 5.4,
+,
+Final Jeopardy,
+Final Jeopardy Prompt,
+Final Jeopardy Answer,`;
+
+        // Game state
+        let gameData = {
+            categories: [],
+            finalJeopardy: { prompt: '', answer: '' },
+            usedCells: new Set(),
+            totalCells: 20,
+            dailyDoubleCell: null
+        };
+
+        let currentView = 'upload';
+        let currentCell = null;
+        let timerInterval = null;
+        let timerSeconds = 0;
+
+        // Timer settings
+        let timerEnabled = true;
+        let timerDuration = 60;
+
+        // DOM Elements
+        const uploadScreen = document.getElementById('upload-screen');
+        const gameBoard = document.getElementById('game-board');
+        const boardGrid = document.getElementById('board-grid');
+        const dailyDoubleScreen = document.getElementById('daily-double-screen');
+        const promptScreen = document.getElementById('prompt-screen');
+        const promptValue = document.getElementById('prompt-value');
+        const promptText = document.getElementById('prompt-text');
+        const timerDisplay = document.getElementById('timer-display');
+        const finalScreen = document.getElementById('final-screen');
+        const finalTitle = document.getElementById('final-title');
+        const finalText = document.getElementById('final-text');
+        const gameOver = document.getElementById('game-over');
+        const resetBtn = document.getElementById('reset-btn');
+        const csvInput = document.getElementById('csv-input');
+        const dropZone = document.getElementById('drop-zone');
+        const downloadLink = document.getElementById('download-template');
+        const timerEnabledCheckbox = document.getElementById('timer-enabled');
+        const timerPreset = document.getElementById('timer-preset');
+        const timerCustom = document.getElementById('timer-custom');
+
+        // Download template
+        downloadLink.addEventListener('click', () => {
+            const blob = new Blob([csvTemplate], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jeopardy_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Timer settings handlers
+        timerPreset.addEventListener('change', () => {
+            if (timerPreset.value === 'custom') {
+                timerCustom.classList.remove('hidden');
+            } else {
+                timerCustom.classList.add('hidden');
+                timerDuration = parseInt(timerPreset.value);
+            }
+        });
+
+        timerCustom.addEventListener('change', () => {
+            timerDuration = parseInt(timerCustom.value) || 60;
+        });
+
+        timerEnabledCheckbox.addEventListener('change', () => {
+            timerEnabled = timerEnabledCheckbox.checked;
+        });
+
+        // Drag and drop handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                handleFile(files[0]);
+            }
+        }, false);
+
+        // CSV Parser
+        function parseCSV(text) {
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            const categories = [];
+            let currentCategory = null;
+            let finalJeopardy = { prompt: '', answer: '' };
+            let isFinalJeopardy = false;
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line || line === ',') continue;
+
+                const parts = parseCSVLine(line);
+                const label = parts[0] ? parts[0].trim() : '';
+                const text = parts[1] ? parts[1].trim() : '';
+
+                if (label.toLowerCase().includes('final jeopardy')) {
+                    if (label.toLowerCase() === 'final jeopardy') {
+                        isFinalJeopardy = true;
+                        continue;
+                    } else if (label.toLowerCase().includes('prompt')) {
+                        finalJeopardy.prompt = text || label.replace(/final jeopardy prompt/i, '').trim();
+                    } else if (label.toLowerCase().includes('answer')) {
+                        finalJeopardy.answer = text || label.replace(/final jeopardy answer/i, '').trim();
+                    }
+                    continue;
+                }
+
+                if (isFinalJeopardy) {
+                    if (label.toLowerCase().includes('prompt')) {
+                        finalJeopardy.prompt = text || label;
+                    } else if (label.toLowerCase().includes('answer')) {
+                        finalJeopardy.answer = text || label;
+                    }
+                    continue;
+                }
+
+                if (label.toLowerCase().includes('category')) {
+                    currentCategory = {
+                        name: text || label,
+                        prompts: []
+                    };
+                    categories.push(currentCategory);
+                } else if (label.toLowerCase().includes('prompt') && currentCategory) {
+                    currentCategory.prompts.push({
+                        prompt: text || label,
+                        answer: ''
+                    });
+                } else if (label.toLowerCase().includes('answer') && currentCategory && currentCategory.prompts.length > 0) {
+                    currentCategory.prompts[currentCategory.prompts.length - 1].answer = text || label;
+                }
+            }
+
+            return { categories, finalJeopardy };
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            return result;
+        }
+
+        // Handle file
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+                const parsed = parseCSV(text);
+
+                // Get timer settings
+                timerEnabled = timerEnabledCheckbox.checked;
+                if (timerPreset.value === 'custom') {
+                    timerDuration = parseInt(timerCustom.value) || 60;
+                } else {
+                    timerDuration = parseInt(timerPreset.value);
+                }
+
+                gameData.categories = parsed.categories;
+                gameData.finalJeopardy = parsed.finalJeopardy;
+                gameData.usedCells = new Set();
+                gameData.totalCells = Math.min(
+                    parsed.categories.length * 4,
+                    parsed.categories.reduce((sum, cat) => sum + cat.prompts.length, 0)
+                );
+
+                // Select random Daily Double
+                const numCategories = Math.min(parsed.categories.length, 5);
+                const randomCol = Math.floor(Math.random() * numCategories);
+                const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
+                const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
+                gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
+
+                buildBoard();
+                showScreen('board');
+            };
+            reader.readAsText(file);
+        }
+
+        // Build game board
+        function buildBoard() {
+            boardGrid.innerHTML = '';
+
+            // Category row
+            for (let col = 0; col < 5; col++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell category-cell';
+                cell.textContent = gameData.categories[col]?.name || `Category ${col + 1}`;
+                boardGrid.appendChild(cell);
+            }
+
+            // Value rows
+            const values = [200, 400, 600, 800];
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell value-cell';
+                    cell.textContent = `$${values[row]}`;
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.dataset.value = values[row];
+
+                    const cellId = `${col}-${row}`;
+                    if (gameData.usedCells.has(cellId)) {
+                        cell.classList.add('used');
+                    } else {
+                        cell.addEventListener('click', () => selectCell(col, row, values[row]));
+                    }
+
+                    boardGrid.appendChild(cell);
+                }
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (!timerEnabled) {
+                timerDisplay.style.display = 'none';
+                return;
+            }
+
+            timerDisplay.style.display = 'block';
+            timerSeconds = timerDuration;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerDisplay.style.display = 'none';
+            timerDisplay.classList.remove('warning', 'critical');
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = timerSeconds;
+            
+            timerDisplay.classList.remove('warning', 'critical');
+            if (timerSeconds <= 5) {
+                timerDisplay.classList.add('critical');
+            } else if (timerSeconds <= 10) {
+                timerDisplay.classList.add('warning');
+            }
+        }
+
+        // Select a cell
+        function selectCell(col, row, value) {
+            const cellId = `${col}-${row}`;
+            if (gameData.usedCells.has(cellId)) return;
+
+            currentCell = { col, row, value, id: cellId };
+            const promptData = gameData.categories[col]?.prompts[row];
+
+            if (promptData) {
+                promptValue.textContent = `$${value}`;
+                promptText.textContent = promptData.prompt;
+                
+                // Check if this is the Daily Double
+                if (cellId === gameData.dailyDoubleCell) {
+                    showScreen('daily-double');
+                } else {
+                    showScreen('prompt');
+                    startTimer();
+                }
+            }
+        }
+
+        // Show screen
+        function showScreen(screen) {
+            currentView = screen;
+
+            uploadScreen.style.display = 'none';
+            gameBoard.style.display = 'none';
+            dailyDoubleScreen.classList.remove('active');
+            promptScreen.classList.remove('active');
+            finalScreen.classList.remove('active');
+            gameOver.classList.remove('active');
+
+            switch (screen) {
+                case 'upload':
+                    uploadScreen.style.display = 'flex';
+                    resetBtn.classList.add('hidden');
+                    break;
+                case 'board':
+                    gameBoard.style.display = 'block';
+                    resetBtn.classList.remove('hidden');
+                    break;
+                case 'daily-double':
+                    dailyDoubleScreen.classList.add('active');
+                    break;
+                case 'prompt':
+                    promptScreen.classList.add('active');
+                    break;
+                case 'answer':
+                    promptScreen.classList.add('active');
+                    break;
+                case 'final-title':
+                    finalTitle.style.display = 'block';
+                    finalText.style.display = 'none';
+                    finalScreen.classList.add('active');
+                    break;
+                case 'final-prompt':
+                    finalTitle.style.display = 'none';
+                    finalText.style.display = 'block';
+                    finalText.textContent = gameData.finalJeopardy.prompt;
+                    finalScreen.classList.add('active');
+                    break;
+                case 'final-answer':
+                    finalTitle.style.display = 'none';
+                    finalText.style.display = 'block';
+                    finalText.textContent = gameData.finalJeopardy.answer;
+                    finalScreen.classList.add('active');
+                    break;
+                case 'game-over':
+                    gameOver.classList.add('active');
+                    break;
+            }
+        }
+
+        // Click handlers
+        dailyDoubleScreen.addEventListener('click', () => {
+            if (currentView === 'daily-double') {
+                showScreen('prompt');
+                startTimer();
+            }
+        });
+
+        promptScreen.addEventListener('click', () => {
+            if (currentView === 'prompt') {
+                stopTimer();
+                const promptData = gameData.categories[currentCell.col]?.prompts[currentCell.row];
+                if (promptData) {
+                    promptText.textContent = promptData.answer;
+                    // Keep showing the dollar amount for easier scoring
+                    currentView = 'answer';
+                }
+            } else if (currentView === 'answer') {
+                gameData.usedCells.add(currentCell.id);
+                buildBoard();
+
+                if (gameData.usedCells.size >= gameData.totalCells) {
+                    showScreen('final-title');
+                } else {
+                    showScreen('board');
+                }
+            }
+        });
+
+        finalScreen.addEventListener('click', () => {
+            if (currentView === 'final-title') {
+                showScreen('final-prompt');
+            } else if (currentView === 'final-prompt') {
+                showScreen('final-answer');
+            } else if (currentView === 'final-answer') {
+                showScreen('game-over');
+            }
+        });
+
+        // File input handler
+        csvInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Reset game
+        function resetGame() {
+            stopTimer();
+            gameData = {
+                categories: [],
+                finalJeopardy: { prompt: '', answer: '' },
+                usedCells: new Set(),
+                totalCells: 20,
+                dailyDoubleCell: null
+            };
+            currentCell = null;
+            csvInput.value = '';
+            showScreen('upload');
+        }
+
+        // Initialize
+        showScreen('upload');
+    </script>
+</body>
+</html>
