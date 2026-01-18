@@ -514,61 +514,29 @@
     <button id="reset-btn" class="hidden" onclick="resetGame()">New Game</button>
 
     <script>
-        // CSV Template
-        const csvTemplate = `Label,Text
-Category 1,
-Prompt 1.1,
-Answer 1.1,
-Prompt 1.2,
-Answer 1.2,
-Prompt 1.3,
-Answer 1.3,
-Prompt 1.4,
-Answer 1.4,
-,
-Category 2,
-Prompt 2.1,
-Answer 2.1,
-Prompt 2.2,
-Answer 2.2,
-Prompt 2.3,
-Answer 2.3,
-Prompt 2.4,
-Answer 2.4,
-,
-Category 3,
-Prompt 3.1,
-Answer 3.1,
-Prompt 3.2,
-Answer 3.2,
-Prompt 3.3,
-Answer 3.3,
-Prompt 3.4,
-Answer 3.4,
-,
-Category 4,
-Prompt 4.1,
-Answer 4.1,
-Prompt 4.2,
-Answer 4.2,
-Prompt 4.3,
-Answer 4.3,
-Prompt 4.4,
-Answer 4.4,
-,
-Category 5,
-Prompt 5.1,
-Answer 5.1,
-Prompt 5.2,
-Answer 5.2,
-Prompt 5.3,
-Answer 5.3,
-Prompt 5.4,
-Answer 5.4,
-,
-Final Jeopardy Category,
-Final Jeopardy Prompt,
-Final Jeopardy Answer,`;
+        // CSV Template - New cleaner format: Category, Value, Prompt, Answer
+        const csvTemplate = `Category,Value,Prompt,Answer
+Science,200,This molecule has the chemical formula H2O,What is water?
+Science,400,The closest star to Earth,What is the Sun?
+Science,600,This force keeps planets in orbit around the Sun,What is gravity?
+Science,800,The number of bones in an adult human body,What is 206?
+History,200,The year the Declaration of Independence was signed,What is 1776?
+History,400,This ancient civilization built the pyramids at Giza,What is Egypt?
+History,600,The ship that brought the Pilgrims to America in 1620,What is the Mayflower?
+History,800,This wall divided Berlin from 1961 to 1989,What is the Berlin Wall?
+Geography,200,The largest ocean on Earth,What is the Pacific Ocean?
+Geography,400,This river is the longest in Africa,What is the Nile?
+Geography,600,The smallest country in the world by area,What is Vatican City?
+Geography,800,This mountain range separates Europe from Asia,What are the Urals?
+Pop Culture,200,The boy wizard created by J.K. Rowling,Who is Harry Potter?
+Pop Culture,400,This 1994 film follows Forrest through decades of American history,What is Forrest Gump?
+Pop Culture,600,The fictional country where Black Panther is set,What is Wakanda?
+Pop Culture,800,This band released the album "Abbey Road" in 1969,Who are The Beatles?
+Literature,200,The author of "Romeo and Juliet",Who is William Shakespeare?
+Literature,400,This novel begins "Call me Ishmael",What is Moby-Dick?
+Literature,600,The dystopian novel featuring Big Brother,What is 1984?
+Literature,800,This Greek epic tells of Odysseus's journey home,What is The Odyssey?
+Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,What is the Lighthouse (or Pharos)?`;
 
         // Game state
         let gameData = {
@@ -671,62 +639,7 @@ Final Jeopardy Answer,`;
             }
         }, false);
 
-        // CSV Parser
-        function parseCSV(text) {
-            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-            const categories = [];
-            let currentCategory = null;
-            let finalJeopardy = { category: '', prompt: '', answer: '' };
-            let isFinalJeopardy = false;
-
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                if (!line || line === ',') continue;
-
-                const parts = parseCSVLine(line);
-                const label = parts[0] ? parts[0].trim() : '';
-                const text = parts[1] ? parts[1].trim() : '';
-
-                if (label.toLowerCase().includes('final jeopardy')) {
-                    isFinalJeopardy = true;
-                    if (label.toLowerCase().includes('category')) {
-                        finalJeopardy.category = text || '';
-                    } else if (label.toLowerCase().includes('prompt')) {
-                        finalJeopardy.prompt = text || label.replace(/final jeopardy prompt/i, '').trim();
-                    } else if (label.toLowerCase().includes('answer')) {
-                        finalJeopardy.answer = text || label.replace(/final jeopardy answer/i, '').trim();
-                    }
-                    continue;
-                }
-
-                if (isFinalJeopardy) {
-                    if (label.toLowerCase().includes('prompt')) {
-                        finalJeopardy.prompt = text || label;
-                    } else if (label.toLowerCase().includes('answer')) {
-                        finalJeopardy.answer = text || label;
-                    }
-                    continue;
-                }
-
-                if (label.toLowerCase().includes('category')) {
-                    currentCategory = {
-                        name: text || label,
-                        prompts: []
-                    };
-                    categories.push(currentCategory);
-                } else if (label.toLowerCase().includes('prompt') && currentCategory) {
-                    currentCategory.prompts.push({
-                        prompt: text || label,
-                        answer: ''
-                    });
-                } else if (label.toLowerCase().includes('answer') && currentCategory && currentCategory.prompts.length > 0) {
-                    currentCategory.prompts[currentCategory.prompts.length - 1].answer = text || label;
-                }
-            }
-
-            return { categories, finalJeopardy };
-        }
-
+        // CSV Line Parser (handles quoted fields)
         function parseCSVLine(line) {
             const result = [];
             let current = '';
@@ -737,14 +650,83 @@ Final Jeopardy Answer,`;
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current);
+                    result.push(current.trim());
                     current = '';
                 } else {
                     current += char;
                 }
             }
-            result.push(current);
+            result.push(current.trim());
             return result;
+        }
+
+        // New CSV Parser for cleaner format: Category, Value, Prompt, Answer
+        function parseCSV(text) {
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            const categoryMap = new Map(); // category name -> { name, prompts: Map(value -> {prompt, answer}) }
+            let finalJeopardy = { category: 'Final Jeopardy', prompt: '', answer: '' };
+
+            // Skip header row
+            for (let i = 1; i < lines.length; i++) {
+                const parts = parseCSVLine(lines[i]);
+                if (parts.length < 4) continue;
+
+                const [category, value, prompt, answer] = parts;
+                if (!category || !prompt) continue;
+
+                // Check for Final Jeopardy
+                if (value.toLowerCase() === 'final') {
+                    finalJeopardy = {
+                        category: category,
+                        prompt: prompt,
+                        answer: answer || ''
+                    };
+                    continue;
+                }
+
+                // Regular question
+                const numericValue = parseInt(value);
+                if (isNaN(numericValue)) continue;
+
+                if (!categoryMap.has(category)) {
+                    categoryMap.set(category, {
+                        name: category,
+                        promptsByValue: new Map()
+                    });
+                }
+
+                categoryMap.get(category).promptsByValue.set(numericValue, {
+                    prompt: prompt,
+                    answer: answer || ''
+                });
+            }
+
+            // Convert to array format expected by the game
+            // Sort categories by first appearance order (Map maintains insertion order)
+            const categories = [];
+            const standardValues = [200, 400, 600, 800];
+
+            for (const [catName, catData] of categoryMap) {
+                const prompts = [];
+                for (const val of standardValues) {
+                    const questionData = catData.promptsByValue.get(val);
+                    if (questionData) {
+                        prompts.push({
+                            prompt: questionData.prompt,
+                            answer: questionData.answer,
+                            value: val
+                        });
+                    }
+                }
+                if (prompts.length > 0) {
+                    categories.push({
+                        name: catName,
+                        prompts: prompts
+                    });
+                }
+            }
+
+            return { categories, finalJeopardy };
         }
 
         // Handle file with encoding detection
@@ -790,10 +772,12 @@ Final Jeopardy Answer,`;
 
             // Select random Daily Double
             const numCategories = Math.min(parsed.categories.length, 5);
-            const randomCol = Math.floor(Math.random() * numCategories);
-            const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
-            const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
-            gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
+            if (numCategories > 0) {
+                const randomCol = Math.floor(Math.random() * numCategories);
+                const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
+                const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
+                gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
+            }
 
             buildBoard();
             showScreen('board');

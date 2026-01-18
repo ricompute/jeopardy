@@ -30,28 +30,32 @@ with your own questions and answers to play.
 
 ## CSV Format
 
-Download the template from the app or create your own CSV with this structure:
+The CSV uses a simple one-row-per-question format with four columns:
 
 ```
-Label,Text
-Category 1,Your Category Name
-Prompt 1.1,Your $200 question
-Answer 1.1,The answer
-Prompt 1.2,Your $400 question
-Answer 1.2,The answer
-Prompt 1.3,Your $600 question
-Answer 1.3,The answer
-Prompt 1.4,Your $800 question
-Answer 1.4,The answer
-,
-Category 2,Another Category
+Category,Value,Prompt,Answer
+```
+
+Example:
+
+```csv
+Category,Value,Prompt,Answer
+Science,200,This molecule has the chemical formula H2O,What is water?
+Science,400,The closest star to Earth,What is the Sun?
+Science,600,This force keeps planets in orbit,What is gravity?
+Science,800,The number of bones in an adult human,What is 206?
+History,200,Year the Declaration was signed,What is 1776?
+History,400,This civilization built the pyramids at Giza,What is Egypt?
 ...
-Final Jeopardy Category,Your Final Category
-Final Jeopardy Prompt,Your final question
-Final Jeopardy Answer,The final answer
+Final Jeopardy,Final,This wonder was located in Alexandria,What is the Lighthouse?
 ```
 
-Repeat for 5 categories, then add Final Jeopardy at the end.
+**Key points:**
+- Each row is a complete, self-contained question
+- Categories are identified by name (group questions by putting the same category name)
+- Values should be 200, 400, 600, or 800
+- For Final Jeopardy, use "Final" as the value
+- Download the template from within the app or use `jeopardy_template.csv`
 
 ## AI-Generated Disclosure
 
