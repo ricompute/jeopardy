@@ -10,9 +10,13 @@ with your own questions and answers to play.
 
 - **Custom Games** — Upload your own questions via CSV file
 - **Classic Jeopardy Style** — Blue background, gold text, authentic look and feel
-- **5×5 Game Board** — 5 categories with 4 questions each ($200–$800)
-- **Daily Double** — One random question per game is the Daily Double
-- **Final Jeopardy** — Automatically appears after all questions are answered
+- **Single or Two Round Games** — Play a quick single round or a full game with Double Jeopardy
+- **Configurable Point Values** — Set your own point values at game time (default: $200–$800)
+- **5×5 Game Board** — 5 categories with 4 questions each per round
+- **Automatic Point Doubling** — Round 2 automatically doubles your configured values
+- **Daily Doubles** — 1 in Round 1, 2 in Round 2 (randomly placed)
+- **Final Jeopardy** — Automatically appears after all rounds are complete
+- **CSV Validation** — Warnings for malformed CSVs or incomplete data
 - **Configurable Timer** — 30s, 60s, or custom duration (can be disabled)
 - **Drag & Drop** — Drag CSV files directly onto the upload area
 - **16:9 Optimized** — Designed for fullscreen presentation on modern displays
@@ -21,41 +25,80 @@ with your own questions and answers to play.
 ## How to Play
 
 1. Open `jeopardy.html` in any modern web browser
-2. (Optional) Configure timer settings
-3. Upload a CSV file with your questions or drag and drop one onto the upload area
-4. Click dollar amounts to reveal questions
-5. Click the question to reveal the answer
-6. Click the answer to return to the board
-7. After all questions, Final Jeopardy appears automatically
+2. (Optional) Configure point values for rows 1–4
+3. (Optional) Configure timer settings
+4. Upload a CSV file with your questions or drag and drop one onto the upload area
+5. Review any validation warnings and proceed or fix your CSV
+6. Click dollar amounts to reveal questions
+7. Click the question to reveal the answer
+8. Click the answer to return to the board
+9. After Round 1 completes (two-round games), click to continue to Double Jeopardy
+10. After all questions, Final Jeopardy appears automatically
 
 ## CSV Format
 
-The CSV uses a simple one-row-per-question format with four columns:
+The CSV format uses five columns:
 
 ```
-Category,Value,Prompt,Answer
+Round,Category,Order,Prompt,Answer
 ```
 
 Example:
 
 ```csv
-Category,Value,Prompt,Answer
-Science,200,This molecule has the chemical formula H2O,What is water?
-Science,400,The closest star to Earth,What is the Sun?
-Science,600,This force keeps planets in orbit,What is gravity?
-Science,800,The number of bones in an adult human,What is 206?
-History,200,Year the Declaration was signed,What is 1776?
-History,400,This civilization built the pyramids at Giza,What is Egypt?
+Round,Category,Order,Prompt,Answer
+1,Science,1,This molecule has the chemical formula H2O,What is water?
+1,Science,2,The closest star to Earth,What is the Sun?
+1,Science,3,This force keeps planets in orbit,What is gravity?
+1,Science,4,The number of bones in an adult human,What is 206?
+1,History,1,Year the Declaration was signed,What is 1776?
 ...
-Final Jeopardy,Final,This wonder was located in Alexandria,What is the Lighthouse?
+2,Technology,1,This company created the iPhone,What is Apple?
+2,Technology,2,The programming language created by Guido van Rossum,What is Python?
+...
+Final,Ancient Wonders,Final,This wonder was located in Alexandria,What is the Lighthouse?
 ```
 
 **Key points:**
-- Each row is a complete, self-contained question
-- Categories are identified by name (group questions by putting the same category name)
-- Values should be 200, 400, 600, or 800
-- For Final Jeopardy, use "Final" as the value
-- Download the template from within the app or use `jeopardy_template.csv`
+- **Round**: Use `1` for Jeopardy, `2` for Double Jeopardy, `Final` for Final Jeopardy
+- **Category**: The category name (for Final Jeopardy, this is the actual category shown to players)
+- **Order**: Use `1`, `2`, `3`, `4` for question position (easiest to hardest), or `Final`
+- For a single-round game, simply omit Round 2 questions
+- Each round needs 5 categories with 4 questions each (20 questions per round)
+- Download the template from within the app
+
+## Configurable Point Values
+
+Before starting the game, you can set custom point values for each row:
+
+| Row | Default | Example Custom |
+|-----|---------|----------------|
+| 1 | $200 | $100 |
+| 2 | $400 | $200 |
+| 3 | $600 | $300 |
+| 4 | $800 | $400 |
+
+In Double Jeopardy (Round 2), all values are automatically doubled.
+
+## Game Structure
+
+| Round | Categories | Questions | Daily Doubles | Point Values |
+|-------|------------|-----------|---------------|--------------|
+| Jeopardy (Round 1) | 5 | 20 | 1 | Your configured values |
+| Double Jeopardy (Round 2) | 5 | 20 | 2 | 2× your configured values |
+| Final Jeopardy | 1 | 1 | — | Wager |
+
+## CSV Validation
+
+The game validates your CSV file before starting and will warn you about:
+
+- **Invalid order values** — Values other than 1, 2, 3, 4 (or "Final")
+- **Incomplete categories** — Categories missing questions for certain positions
+- **Missing data** — Rows with empty category, prompt, or answer fields
+- **Category count** — Fewer or more than 5 categories per round
+- **Missing Final Jeopardy** — No question with "Final" as the order
+
+You can choose to proceed with warnings or cancel to fix your CSV first.
 
 ## AI-Generated Disclosure
 

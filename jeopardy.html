@@ -69,6 +69,13 @@
             margin-top: 15px;
         }
 
+        .upload-container .format-hint {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
         #csv-input {
             display: none;
         }
@@ -91,10 +98,15 @@
             box-shadow: 0 4px 15px rgba(255, 204, 0, 0.5);
         }
 
+        .download-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
         .download-link {
             color: #FFCC00;
             font-size: 1rem;
-            margin-top: 20px;
             text-decoration: underline;
             cursor: pointer;
             transition: color 0.2s;
@@ -104,34 +116,36 @@
             color: #fff;
         }
 
-        /* Timer Settings */
-        .timer-settings {
+        /* Settings Section */
+        .settings-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,204,0,0.3);
+        }
+
+        .settings-row {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-top: 25px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        .timer-settings label {
+        .settings-row label {
             color: white;
             font-size: 1rem;
         }
 
-        .timer-settings input[type="checkbox"] {
+        .settings-row input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
 
-        .timer-options {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .timer-options select, .timer-options input[type="number"] {
+        .settings-row select, .settings-row input[type="number"] {
             padding: 8px 12px;
             font-size: 1rem;
             border: 2px solid #FFCC00;
@@ -141,13 +155,168 @@
             cursor: pointer;
         }
 
-        .timer-options input[type="number"] {
+        .settings-row input[type="number"] {
             width: 80px;
         }
 
-        .timer-options select:focus, .timer-options input[type="number"]:focus {
+        .settings-row select:focus, .settings-row input[type="number"]:focus {
             outline: none;
             border-color: #fff;
+        }
+
+        /* Point Values Config */
+        .point-values-config {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .point-values-config .config-label {
+            color: #FFCC00;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .point-values-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .point-value-input {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .point-value-input label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+        }
+
+        .point-value-input input {
+            width: 70px;
+            padding: 6px 8px;
+            font-size: 0.95rem;
+            border: 2px solid #FFCC00;
+            border-radius: 5px;
+            background: #0000aa;
+            color: #FFCC00;
+            text-align: center;
+        }
+
+        .point-value-input input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        /* Warning Modal */
+        #warning-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #warning-modal.active {
+            display: flex;
+        }
+
+        .warning-content {
+            background: linear-gradient(180deg, #1a1aff 0%, #0000aa 100%);
+            border: 4px solid #FF6600;
+            border-radius: 10px;
+            padding: 30px 40px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .warning-content h2 {
+            color: #FF6600;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .warning-list {
+            text-align: left;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .warning-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .warning-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .warning-list li::before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            color: #FF6600;
+        }
+
+        .warning-list li.error::before {
+            content: "✗";
+            color: #FF0000;
+        }
+
+        .warning-list li.info::before {
+            content: "ℹ";
+            color: #00CCFF;
+        }
+
+        .warning-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .warning-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .warning-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .warning-btn.proceed {
+            background: linear-gradient(180deg, #FFDD33 0%, #CC9900 100%);
+            color: #060CE9;
+        }
+
+        .warning-btn.cancel {
+            background: linear-gradient(180deg, #666 0%, #444 100%);
+            color: white;
         }
 
         /* Game Board - 16:9 optimized */
@@ -318,6 +487,49 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Round Transition Screen */
+        #round-transition-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #060CE9;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        #round-transition-screen.active {
+            display: flex;
+        }
+
+        #round-transition-text {
+            color: #FFCC00;
+            font-size: clamp(4rem, 10vw, 7rem);
+            font-style: italic;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 6px 6px 12px rgba(0,0,0,0.7);
+            animation: roundPulse 1.5s ease-in-out infinite;
+        }
+
+        #round-transition-subtitle {
+            color: white;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-top: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        @keyframes roundPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+
         /* Final Jeopardy */
         #final-screen {
             display: none;
@@ -365,6 +577,28 @@
             text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
             max-width: 90%;
             line-height: 1.3;
+        }
+
+        #final-timer-display {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFCC00;
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        #final-timer-display.warning {
+            color: #FF6600;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        #final-timer-display.critical {
+            color: #FF0000;
+            animation: pulse 0.25s ease-in-out infinite;
         }
 
         /* Game Over */
@@ -432,6 +666,18 @@
             background: rgba(255,204,0,0.4);
         }
 
+        /* Game mode indicator */
+        #mode-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: #FFCC00;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -464,20 +710,66 @@
             </button>
             <p class="drag-text">or drag and drop a CSV file here</p>
             
-            <div class="timer-settings">
-                <input type="checkbox" id="timer-enabled" checked>
-                <label for="timer-enabled">Enable Timer</label>
-                <div class="timer-options">
+            <div class="settings-section">
+                <!-- Point Values Configuration -->
+                <div class="point-values-config">
+                    <span class="config-label">Point Values (Row 1–4)</span>
+                    <div class="point-values-row">
+                        <div class="point-value-input">
+                            <label>1:</label>
+                            <input type="number" id="point-value-1" value="200" min="0" step="100">
+                        </div>
+                        <div class="point-value-input">
+                            <label>2:</label>
+                            <input type="number" id="point-value-2" value="400" min="0" step="100">
+                        </div>
+                        <div class="point-value-input">
+                            <label>3:</label>
+                            <input type="number" id="point-value-3" value="600" min="0" step="100">
+                        </div>
+                        <div class="point-value-input">
+                            <label>4:</label>
+                            <input type="number" id="point-value-4" value="800" min="0" step="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer Settings -->
+                <div class="settings-row">
+                    <input type="checkbox" id="timer-enabled" checked>
+                    <label for="timer-enabled">Enable Timer</label>
                     <select id="timer-preset">
                         <option value="30">30 seconds</option>
                         <option value="60" selected>60 seconds</option>
+                        <option value="90">90 seconds</option>
                         <option value="custom">Custom</option>
                     </select>
                     <input type="number" id="timer-custom" min="5" max="300" value="60" class="hidden" placeholder="sec">
                 </div>
             </div>
+            
+            <p class="format-hint">
+                Format: Round, Category, Order, Prompt, Answer<br>
+                (For single round, just use Round 1)
+            </p>
         </div>
-        <a class="download-link" id="download-template">Download CSV Template</a>
+        <div class="download-links">
+            <a class="download-link" id="download-template">Download CSV Template</a>
+        </div>
+    </div>
+
+    <!-- Warning Modal -->
+    <div id="warning-modal">
+        <div class="warning-content">
+            <h2>⚠ CSV Validation Issues</h2>
+            <div class="warning-list" id="warning-list">
+                <ul id="warning-items"></ul>
+            </div>
+            <div class="warning-buttons">
+                <button class="warning-btn cancel" onclick="closeWarningModal()">Cancel</button>
+                <button class="warning-btn proceed" id="proceed-btn">Continue Anyway</button>
+            </div>
+        </div>
     </div>
 
     <!-- Game Board -->
@@ -488,6 +780,12 @@
     <!-- Daily Double Screen -->
     <div id="daily-double-screen">
         <div id="daily-double-text">DAILY<br>DOUBLE!</div>
+    </div>
+
+    <!-- Round Transition Screen -->
+    <div id="round-transition-screen">
+        <div id="round-transition-text">DOUBLE<br>JEOPARDY!</div>
+        <div id="round-transition-subtitle">Click to continue</div>
     </div>
 
     <!-- Prompt/Answer Screen -->
@@ -502,6 +800,7 @@
         <div id="final-title">FINAL JEOPARDY!</div>
         <div id="final-category"></div>
         <div id="final-text"></div>
+        <div id="final-timer-display"></div>
     </div>
 
     <!-- Game Over Screen -->
@@ -510,41 +809,66 @@
         <button class="play-again-btn" onclick="resetGame()">Play Again</button>
     </div>
 
+    <!-- Mode Indicator -->
+    <div id="mode-indicator" class="hidden"></div>
+
     <!-- Reset Button -->
     <button id="reset-btn" class="hidden" onclick="resetGame()">New Game</button>
 
     <script>
-        // CSV Template - New cleaner format: Category, Value, Prompt, Answer
-        const csvTemplate = `Category,Value,Prompt,Answer
-Science,200,This molecule has the chemical formula H2O,What is water?
-Science,400,The closest star to Earth,What is the Sun?
-Science,600,This force keeps planets in orbit around the Sun,What is gravity?
-Science,800,The number of bones in an adult human body,What is 206?
-History,200,The year the Declaration of Independence was signed,What is 1776?
-History,400,This ancient civilization built the pyramids at Giza,What is Egypt?
-History,600,The ship that brought the Pilgrims to America in 1620,What is the Mayflower?
-History,800,This wall divided Berlin from 1961 to 1989,What is the Berlin Wall?
-Geography,200,The largest ocean on Earth,What is the Pacific Ocean?
-Geography,400,This river is the longest in Africa,What is the Nile?
-Geography,600,The smallest country in the world by area,What is Vatican City?
-Geography,800,This mountain range separates Europe from Asia,What are the Urals?
-Pop Culture,200,The boy wizard created by J.K. Rowling,Who is Harry Potter?
-Pop Culture,400,This 1994 film follows Forrest through decades of American history,What is Forrest Gump?
-Pop Culture,600,The fictional country where Black Panther is set,What is Wakanda?
-Pop Culture,800,This band released the album "Abbey Road" in 1969,Who are The Beatles?
-Literature,200,The author of "Romeo and Juliet",Who is William Shakespeare?
-Literature,400,This novel begins "Call me Ishmael",What is Moby-Dick?
-Literature,600,The dystopian novel featuring Big Brother,What is 1984?
-Literature,800,This Greek epic tells of Odysseus's journey home,What is The Odyssey?
-Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,What is the Lighthouse (or Pharos)?`;
+        // CSV Template
+        const csvTemplate = `Round,Category,Order,Prompt,Answer
+1,Science,1,This molecule has the chemical formula H2O,What is water?
+1,Science,2,The closest star to Earth,What is the Sun?
+1,Science,3,This force keeps planets in orbit around the Sun,What is gravity?
+1,Science,4,The number of bones in an adult human body,What is 206?
+1,History,1,The year the Declaration of Independence was signed,What is 1776?
+1,History,2,This ancient civilization built the pyramids at Giza,What is Egypt?
+1,History,3,The ship that brought the Pilgrims to America in 1620,What is the Mayflower?
+1,History,4,This wall divided Berlin from 1961 to 1989,What is the Berlin Wall?
+1,Geography,1,The largest ocean on Earth,What is the Pacific Ocean?
+1,Geography,2,This river is the longest in Africa,What is the Nile?
+1,Geography,3,The smallest country in the world by area,What is Vatican City?
+1,Geography,4,This mountain range separates Europe from Asia,What are the Urals?
+1,Pop Culture,1,The boy wizard created by J.K. Rowling,Who is Harry Potter?
+1,Pop Culture,2,This 1994 film follows Forrest through decades of American history,What is Forrest Gump?
+1,Pop Culture,3,The fictional country where Black Panther is set,What is Wakanda?
+1,Pop Culture,4,This band released the album "Abbey Road" in 1969,Who are The Beatles?
+1,Literature,1,The author of "Romeo and Juliet",Who is William Shakespeare?
+1,Literature,2,This novel begins "Call me Ishmael",What is Moby-Dick?
+1,Literature,3,The dystopian novel featuring Big Brother,What is 1984?
+1,Literature,4,This Greek epic tells of Odysseus's journey home,What is The Odyssey?
+2,Technology,1,This company created the iPhone,What is Apple?
+2,Technology,2,The programming language created by Guido van Rossum,What is Python?
+2,Technology,3,This protocol powers the World Wide Web,What is HTTP?
+2,Technology,4,The year the first email was sent,What is 1971?
+2,Sports,1,The number of players on a basketball team on the court,What is 5?
+2,Sports,2,This country has won the most FIFA World Cups,What is Brazil?
+2,Sports,3,The length in miles of a marathon,What is 26.2?
+2,Sports,4,This boxer was known as "The Greatest",Who is Muhammad Ali?
+2,Music,1,The number of strings on a standard guitar,What is 6?
+2,Music,2,This Austrian composer wrote "The Magic Flute",Who is Mozart?
+2,Music,3,The decade that saw the birth of hip-hop,What are the 1970s?
+2,Music,4,This instrument has 88 keys,What is a piano?
+2,Movies,1,The director of "Jurassic Park" and "E.T.",Who is Steven Spielberg?
+2,Movies,2,This 1997 film won 11 Academy Awards,What is Titanic?
+2,Movies,3,The actor who played the Joker in "The Dark Knight",Who is Heath Ledger?
+2,Movies,4,This studio created "Toy Story",What is Pixar?
+2,Food & Drink,1,The country of origin for sushi,What is Japan?
+2,Food & Drink,2,This spice comes from the crocus flower,What is saffron?
+2,Food & Drink,3,The main ingredient in traditional hummus,What are chickpeas?
+2,Food & Drink,4,This French term means "everything in place" for cooking prep,What is mise en place?
+Final,Ancient Wonders,Final,This ancient wonder of the world was located in Alexandria,What is the Lighthouse (or Pharos)?`;
 
         // Game state
         let gameData = {
-            categories: [],
+            rounds: {
+                1: { categories: [], dailyDoubleCells: [], usedCells: new Set(), totalCells: 0 },
+                2: { categories: [], dailyDoubleCells: [], usedCells: new Set(), totalCells: 0 }
+            },
             finalJeopardy: { category: '', prompt: '', answer: '' },
-            usedCells: new Set(),
-            totalCells: 20,
-            dailyDoubleCell: null
+            currentRound: 1,
+            hasTwoRounds: false
         };
 
         let currentView = 'upload';
@@ -552,15 +876,17 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
         let timerInterval = null;
         let timerSeconds = 0;
 
-        // Timer settings
+        // Settings
         let timerEnabled = true;
         let timerDuration = 60;
+        let pointValues = [200, 400, 600, 800]; // Configurable point values for rows 1-4
 
         // DOM Elements
         const uploadScreen = document.getElementById('upload-screen');
         const gameBoard = document.getElementById('game-board');
         const boardGrid = document.getElementById('board-grid');
         const dailyDoubleScreen = document.getElementById('daily-double-screen');
+        const roundTransitionScreen = document.getElementById('round-transition-screen');
         const promptScreen = document.getElementById('prompt-screen');
         const promptValue = document.getElementById('prompt-value');
         const promptText = document.getElementById('prompt-text');
@@ -569,6 +895,7 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
         const finalTitle = document.getElementById('final-title');
         const finalCategory = document.getElementById('final-category');
         const finalText = document.getElementById('final-text');
+        const finalTimerDisplay = document.getElementById('final-timer-display');
         const gameOver = document.getElementById('game-over');
         const resetBtn = document.getElementById('reset-btn');
         const csvInput = document.getElementById('csv-input');
@@ -577,6 +904,18 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
         const timerEnabledCheckbox = document.getElementById('timer-enabled');
         const timerPreset = document.getElementById('timer-preset');
         const timerCustom = document.getElementById('timer-custom');
+        const warningModal = document.getElementById('warning-modal');
+        const warningItems = document.getElementById('warning-items');
+        const proceedBtn = document.getElementById('proceed-btn');
+        const modeIndicator = document.getElementById('mode-indicator');
+
+        // Point value inputs
+        const pointValueInputs = [
+            document.getElementById('point-value-1'),
+            document.getElementById('point-value-2'),
+            document.getElementById('point-value-3'),
+            document.getElementById('point-value-4')
+        ];
 
         // Download template
         downloadLink.addEventListener('click', () => {
@@ -660,22 +999,255 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
             return result;
         }
 
-        // New CSV Parser for cleaner format: Category, Value, Prompt, Answer
+        // Detect CSV format (single round vs two rounds)
+        function detectCSVFormat(lines) {
+            if (lines.length === 0) return 'unknown';
+            
+            const header = parseCSVLine(lines[0]);
+            const firstCol = header[0]?.toLowerCase().trim();
+            
+            // Check if first column is "Round"
+            if (firstCol === 'round') {
+                return 'two-round';
+            }
+            
+            // Check if first column is "Category"
+            if (firstCol === 'category') {
+                return 'single-round';
+            }
+            
+            // Try to detect from data - check if first column of data rows are numbers
+            if (lines.length > 1) {
+                const firstDataRow = parseCSVLine(lines[1]);
+                const firstValue = firstDataRow[0]?.trim();
+                if (firstValue === '1' || firstValue === '2' || firstValue.toLowerCase() === 'final') {
+                    return 'two-round';
+                }
+            }
+            
+            return 'single-round'; // Default to single round
+        }
+
+        // Normalize order value - accepts 1-4 or legacy dollar values (200, 400, 600, 800)
+        function normalizeOrder(value) {
+            const num = parseInt(value);
+            if (isNaN(num)) return null;
+            
+            // If it's 1-4, use directly
+            if (num >= 1 && num <= 4) return num;
+            
+            // Legacy support: convert dollar values to order
+            const legacyMap = { 200: 1, 400: 2, 600: 3, 800: 4 };
+            return legacyMap[num] || null;
+        }
+
+        // CSV Validation
+        function validateCSV(text) {
+            const warnings = [];
+            const errors = [];
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            
+            if (lines.length === 0) {
+                errors.push({ type: 'error', message: 'CSV file is empty' });
+                return { warnings, errors, isValid: false };
+            }
+
+            const format = detectCSVFormat(lines);
+            const isTwoRound = format === 'two-round';
+            
+            // Track categories and their orders per round
+            const roundData = { 1: new Map(), 2: new Map() };
+            const standardOrders = [1, 2, 3, 4];
+            const invalidOrders = [];
+            let hasFinalJeopardy = false;
+            let rowsWithMissingData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const parts = parseCSVLine(lines[i]);
+                const rowNum = i + 1;
+
+                let round, category, order, prompt, answer;
+                
+                if (isTwoRound) {
+                    if (parts.length < 5) {
+                        rowsWithMissingData.push(rowNum);
+                        continue;
+                    }
+                    [round, category, order, prompt, answer] = parts;
+                    
+                    // Normalize round
+                    const roundLower = round.toLowerCase().trim();
+                    if (roundLower === 'final') {
+                        round = 'final';
+                    } else {
+                        round = parseInt(round) || 1;
+                    }
+                } else {
+                    if (parts.length < 4) {
+                        rowsWithMissingData.push(rowNum);
+                        continue;
+                    }
+                    [category, order, prompt, answer] = parts;
+                    round = 1;
+                }
+
+                // Check for empty fields
+                if (!category || !prompt) {
+                    rowsWithMissingData.push(rowNum);
+                    continue;
+                }
+
+                if (!answer) {
+                    warnings.push({ type: 'warning', message: `Row ${rowNum}: Missing answer for "${prompt.substring(0, 30)}..."` });
+                }
+
+                // Check for Final Jeopardy
+                if (order.toLowerCase() === 'final' || round === 'final') {
+                    hasFinalJeopardy = true;
+                    continue;
+                }
+
+                // Validate and normalize order
+                const normalizedOrder = normalizeOrder(order);
+                
+                if (normalizedOrder === null) {
+                    warnings.push({ type: 'warning', message: `Row ${rowNum}: Invalid order "${order}" (expected 1-4)` });
+                    continue;
+                }
+
+                if (!standardOrders.includes(normalizedOrder)) {
+                    invalidOrders.push({ row: rowNum, order: normalizedOrder });
+                }
+
+                // Track category orders per round
+                const roundNum = (round === 'final') ? 1 : (round || 1);
+                if (!roundData[roundNum]) roundData[roundNum] = new Map();
+                
+                if (!roundData[roundNum].has(category)) {
+                    roundData[roundNum].set(category, new Set());
+                }
+                roundData[roundNum].get(category).add(normalizedOrder);
+            }
+
+            // Report invalid orders
+            if (invalidOrders.length > 0) {
+                const summary = invalidOrders.slice(0, 5).map(v => `Row ${v.row}: ${v.order}`).join(', ');
+                const more = invalidOrders.length > 5 ? ` (and ${invalidOrders.length - 5} more)` : '';
+                warnings.push({ type: 'warning', message: `Non-standard order values: ${summary}${more}. Expected: 1, 2, 3, 4` });
+            }
+
+            // Report rows with missing data
+            if (rowsWithMissingData.length > 0) {
+                const summary = rowsWithMissingData.slice(0, 5).join(', ');
+                const more = rowsWithMissingData.length > 5 ? ` (and ${rowsWithMissingData.length - 5} more)` : '';
+                warnings.push({ type: 'warning', message: `Rows with missing/incomplete data: ${summary}${more}` });
+            }
+
+            // Check each round
+            const hasRound2 = roundData[2] && roundData[2].size > 0;
+            
+            for (const [roundNum, categoryMap] of Object.entries(roundData)) {
+                if (categoryMap.size === 0) continue;
+                
+                const roundLabel = hasRound2 ? `Round ${roundNum}` : '';
+                
+                // Check for incomplete categories
+                for (const [category, orders] of categoryMap) {
+                    const missingOrders = standardOrders.filter(o => !orders.has(o));
+                    if (missingOrders.length > 0) {
+                        warnings.push({ type: 'warning', message: `${roundLabel} "${category}" missing order: ${missingOrders.join(', ')}` });
+                    }
+                }
+
+                // Check number of categories
+                if (categoryMap.size < 5) {
+                    warnings.push({ type: 'warning', message: `${roundLabel} has ${categoryMap.size} categories (standard is 5)` });
+                } else if (categoryMap.size > 5) {
+                    warnings.push({ type: 'warning', message: `${roundLabel} has ${categoryMap.size} categories (only first 5 will be used)` });
+                }
+            }
+
+            // Check for Final Jeopardy
+            if (!hasFinalJeopardy) {
+                warnings.push({ type: 'warning', message: 'No Final Jeopardy question found' });
+            }
+
+            const isValid = errors.length === 0;
+            return { warnings, errors, isValid, format, hasRound2 };
+        }
+
+        // Warning Modal
+        function showWarningModal(warnings, errors, onProceed) {
+            warningItems.innerHTML = '';
+            
+            errors.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'error';
+                li.textContent = item.message;
+                warningItems.appendChild(li);
+            });
+            
+            warnings.forEach(item => {
+                const li = document.createElement('li');
+                li.className = item.type === 'info' ? 'info' : '';
+                li.textContent = item.message;
+                warningItems.appendChild(li);
+            });
+
+            proceedBtn.onclick = () => {
+                closeWarningModal();
+                onProceed();
+            };
+
+            // Disable proceed if there are critical errors
+            if (errors.length > 0) {
+                proceedBtn.style.display = 'none';
+            } else {
+                proceedBtn.style.display = 'block';
+            }
+
+            warningModal.classList.add('active');
+        }
+
+        function closeWarningModal() {
+            warningModal.classList.remove('active');
+        }
+
+        // Parse CSV (handles both formats)
         function parseCSV(text) {
             const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-            const categoryMap = new Map(); // category name -> { name, prompts: Map(value -> {prompt, answer}) }
+            const format = detectCSVFormat(lines);
+            const isTwoRound = format === 'two-round';
+            
+            const roundCategories = { 1: new Map(), 2: new Map() };
             let finalJeopardy = { category: 'Final Jeopardy', prompt: '', answer: '' };
 
             // Skip header row
             for (let i = 1; i < lines.length; i++) {
                 const parts = parseCSVLine(lines[i]);
-                if (parts.length < 4) continue;
+                
+                let round, category, order, prompt, answer;
+                
+                if (isTwoRound) {
+                    if (parts.length < 5) continue;
+                    [round, category, order, prompt, answer] = parts;
+                    
+                    const roundLower = round.toLowerCase().trim();
+                    if (roundLower === 'final') {
+                        round = 'final';
+                    } else {
+                        round = parseInt(round) || 1;
+                    }
+                } else {
+                    if (parts.length < 4) continue;
+                    [category, order, prompt, answer] = parts;
+                    round = 1;
+                }
 
-                const [category, value, prompt, answer] = parts;
                 if (!category || !prompt) continue;
 
                 // Check for Final Jeopardy
-                if (value.toLowerCase() === 'final') {
+                if (order.toLowerCase() === 'final' || round === 'final') {
                     finalJeopardy = {
                         category: category,
                         prompt: prompt,
@@ -684,49 +1256,59 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
                     continue;
                 }
 
-                // Regular question
-                const numericValue = parseInt(value);
-                if (isNaN(numericValue)) continue;
+                // Regular question - normalize order
+                const normalizedOrder = normalizeOrder(order);
+                if (normalizedOrder === null) continue;
 
-                if (!categoryMap.has(category)) {
-                    categoryMap.set(category, {
+                const roundNum = round || 1;
+                if (!roundCategories[roundNum]) roundCategories[roundNum] = new Map();
+                
+                if (!roundCategories[roundNum].has(category)) {
+                    roundCategories[roundNum].set(category, {
                         name: category,
-                        promptsByValue: new Map()
+                        promptsByOrder: new Map()
                     });
                 }
 
-                categoryMap.get(category).promptsByValue.set(numericValue, {
+                roundCategories[roundNum].get(category).promptsByOrder.set(normalizedOrder, {
                     prompt: prompt,
                     answer: answer || ''
                 });
             }
 
-            // Convert to array format expected by the game
-            // Sort categories by first appearance order (Map maintains insertion order)
-            const categories = [];
-            const standardValues = [200, 400, 600, 800];
+            // Convert to array format
+            const standardOrders = [1, 2, 3, 4];
+            const result = {
+                rounds: { 1: [], 2: [] },
+                finalJeopardy,
+                hasTwoRounds: roundCategories[2] && roundCategories[2].size > 0
+            };
 
-            for (const [catName, catData] of categoryMap) {
-                const prompts = [];
-                for (const val of standardValues) {
-                    const questionData = catData.promptsByValue.get(val);
-                    if (questionData) {
-                        prompts.push({
-                            prompt: questionData.prompt,
-                            answer: questionData.answer,
-                            value: val
+            for (const [roundNum, categoryMap] of Object.entries(roundCategories)) {
+                const categories = [];
+                for (const [catName, catData] of categoryMap) {
+                    const prompts = [];
+                    for (const ord of standardOrders) {
+                        const questionData = catData.promptsByOrder.get(ord);
+                        if (questionData) {
+                            prompts.push({
+                                prompt: questionData.prompt,
+                                answer: questionData.answer,
+                                order: ord
+                            });
+                        }
+                    }
+                    if (prompts.length > 0) {
+                        categories.push({
+                            name: catName,
+                            prompts: prompts
                         });
                     }
                 }
-                if (prompts.length > 0) {
-                    categories.push({
-                        name: catName,
-                        prompts: prompts
-                    });
-                }
+                result.rounds[roundNum] = categories;
             }
 
-            return { categories, finalJeopardy };
+            return result;
         }
 
         // Handle file with encoding detection
@@ -735,82 +1317,168 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
             reader.onload = (event) => {
                 let text = event.target.result;
                 
-                // Check for replacement characters (indicates wrong encoding)
                 if (text.includes('\uFFFD')) {
-                    // Try reading with Windows-1252 encoding (common for Excel files)
                     const reader2 = new FileReader();
                     reader2.onload = (event2) => {
-                        processCSV(event2.target.result);
+                        processCSVWithValidation(event2.target.result);
                     };
                     reader2.readAsText(file, 'windows-1252');
                 } else {
-                    processCSV(text);
+                    processCSVWithValidation(text);
                 }
             };
             reader.readAsText(file, 'UTF-8');
+        }
+
+        // Process CSV with validation
+        function processCSVWithValidation(text) {
+            const validation = validateCSV(text);
+            
+            if (!validation.isValid || validation.warnings.length > 0 || validation.errors.length > 0) {
+                showWarningModal(validation.warnings, validation.errors, () => {
+                    processCSV(text);
+                });
+            } else {
+                processCSV(text);
+            }
+        }
+
+        // Get configured point values
+        function getPointValues() {
+            return pointValueInputs.map(input => parseInt(input.value) || 0);
         }
 
         // Process CSV content
         function processCSV(text) {
             const parsed = parseCSV(text);
 
-            // Get timer settings
+            // Get settings
             timerEnabled = timerEnabledCheckbox.checked;
             if (timerPreset.value === 'custom') {
                 timerDuration = parseInt(timerCustom.value) || 60;
             } else {
                 timerDuration = parseInt(timerPreset.value);
             }
+            
+            pointValues = getPointValues();
 
-            gameData.categories = parsed.categories;
+            // Setup game data
+            gameData.rounds = {
+                1: {
+                    categories: parsed.rounds[1],
+                    dailyDoubleCells: [],
+                    usedCells: new Set(),
+                    totalCells: Math.min(
+                        parsed.rounds[1].length * 4,
+                        parsed.rounds[1].reduce((sum, cat) => sum + cat.prompts.length, 0)
+                    )
+                },
+                2: {
+                    categories: parsed.rounds[2],
+                    dailyDoubleCells: [],
+                    usedCells: new Set(),
+                    totalCells: Math.min(
+                        parsed.rounds[2].length * 4,
+                        parsed.rounds[2].reduce((sum, cat) => sum + cat.prompts.length, 0)
+                    )
+                }
+            };
             gameData.finalJeopardy = parsed.finalJeopardy;
-            gameData.usedCells = new Set();
-            gameData.totalCells = Math.min(
-                parsed.categories.length * 4,
-                parsed.categories.reduce((sum, cat) => sum + cat.prompts.length, 0)
-            );
+            gameData.currentRound = 1;
+            gameData.hasTwoRounds = parsed.hasTwoRounds;
 
-            // Select random Daily Double
-            const numCategories = Math.min(parsed.categories.length, 5);
-            if (numCategories > 0) {
-                const randomCol = Math.floor(Math.random() * numCategories);
-                const numPromptsInCategory = parsed.categories[randomCol]?.prompts.length || 4;
-                const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
-                gameData.dailyDoubleCell = `${randomCol}-${randomRow}`;
+            // Setup Daily Doubles
+            // Round 1: 1 Daily Double
+            // Round 2: 2 Daily Doubles (if two-round game)
+            setupDailyDoubles(1, 1);
+            if (gameData.hasTwoRounds) {
+                setupDailyDoubles(2, 2);
             }
 
             buildBoard();
+            updateModeIndicator();
             showScreen('board');
+        }
+
+        // Setup Daily Doubles for a round
+        function setupDailyDoubles(roundNum, count) {
+            const round = gameData.rounds[roundNum];
+            const numCategories = Math.min(round.categories.length, 5);
+            
+            if (numCategories === 0) return;
+            
+            const usedPositions = new Set();
+            
+            for (let dd = 0; dd < count; dd++) {
+                let attempts = 0;
+                let cellId;
+                
+                do {
+                    const randomCol = Math.floor(Math.random() * numCategories);
+                    const numPromptsInCategory = round.categories[randomCol]?.prompts.length || 4;
+                    const randomRow = Math.floor(Math.random() * Math.min(numPromptsInCategory, 4));
+                    cellId = `${randomCol}-${randomRow}`;
+                    attempts++;
+                } while (usedPositions.has(cellId) && attempts < 50);
+                
+                if (!usedPositions.has(cellId)) {
+                    usedPositions.add(cellId);
+                    round.dailyDoubleCells.push(cellId);
+                }
+            }
+        }
+
+        // Update mode indicator
+        function updateModeIndicator() {
+            if (gameData.hasTwoRounds) {
+                const roundName = gameData.currentRound === 1 ? 'JEOPARDY!' : 'DOUBLE JEOPARDY!';
+                modeIndicator.textContent = roundName;
+                modeIndicator.classList.remove('hidden');
+            } else {
+                modeIndicator.classList.add('hidden');
+            }
+        }
+
+        // Get display value for a row (0-indexed)
+        function getDisplayValue(rowIndex) {
+            const baseValue = pointValues[rowIndex] || 0;
+            return gameData.currentRound === 2 ? baseValue * 2 : baseValue;
+        }
+
+        // Get current round data
+        function getCurrentRound() {
+            return gameData.rounds[gameData.currentRound];
         }
 
         // Build game board
         function buildBoard() {
             boardGrid.innerHTML = '';
+            const round = getCurrentRound();
 
             // Category row
             for (let col = 0; col < 5; col++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell category-cell';
-                cell.textContent = gameData.categories[col]?.name || `Category ${col + 1}`;
+                cell.textContent = round.categories[col]?.name || `Category ${col + 1}`;
                 boardGrid.appendChild(cell);
             }
 
-            // Value rows
-            const values = [200, 400, 600, 800];
+            // Value rows (4 rows for orders 1-4)
             for (let row = 0; row < 4; row++) {
                 for (let col = 0; col < 5; col++) {
                     const cell = document.createElement('div');
                     cell.className = 'cell value-cell';
-                    cell.textContent = `$${values[row]}`;
+                    const displayValue = getDisplayValue(row);
+                    cell.textContent = `$${displayValue}`;
                     cell.dataset.row = row;
                     cell.dataset.col = col;
-                    cell.dataset.value = values[row];
+                    cell.dataset.displayValue = displayValue;
 
                     const cellId = `${col}-${row}`;
-                    if (gameData.usedCells.has(cellId)) {
+                    if (round.usedCells.has(cellId)) {
                         cell.classList.add('used');
                     } else {
-                        cell.addEventListener('click', () => selectCell(col, row, values[row]));
+                        cell.addEventListener('click', () => selectCell(col, row));
                     }
 
                     boardGrid.appendChild(cell);
@@ -819,13 +1487,25 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
         }
 
         // Timer functions
-        function startTimer() {
+        let activeTimerDisplay = null;
+
+        function startTimer(useFinalDisplay = false) {
             if (!timerEnabled) {
                 timerDisplay.style.display = 'none';
+                finalTimerDisplay.style.display = 'none';
                 return;
             }
 
-            timerDisplay.style.display = 'block';
+            activeTimerDisplay = useFinalDisplay ? finalTimerDisplay : timerDisplay;
+            
+            // Hide the other display
+            if (useFinalDisplay) {
+                timerDisplay.style.display = 'none';
+            } else {
+                finalTimerDisplay.style.display = 'none';
+            }
+
+            activeTimerDisplay.style.display = 'block';
             timerSeconds = timerDuration;
             updateTimerDisplay();
 
@@ -847,38 +1527,62 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
             }
             timerDisplay.style.display = 'none';
             timerDisplay.classList.remove('warning', 'critical');
+            finalTimerDisplay.style.display = 'none';
+            finalTimerDisplay.classList.remove('warning', 'critical');
+            activeTimerDisplay = null;
         }
 
         function updateTimerDisplay() {
-            timerDisplay.textContent = timerSeconds;
+            if (!activeTimerDisplay) return;
             
-            timerDisplay.classList.remove('warning', 'critical');
+            activeTimerDisplay.textContent = timerSeconds;
+            
+            activeTimerDisplay.classList.remove('warning', 'critical');
             if (timerSeconds <= 5) {
-                timerDisplay.classList.add('critical');
+                activeTimerDisplay.classList.add('critical');
             } else if (timerSeconds <= 10) {
-                timerDisplay.classList.add('warning');
+                activeTimerDisplay.classList.add('warning');
             }
         }
 
         // Select a cell
-        function selectCell(col, row, value) {
+        function selectCell(col, row) {
+            const round = getCurrentRound();
             const cellId = `${col}-${row}`;
-            if (gameData.usedCells.has(cellId)) return;
+            if (round.usedCells.has(cellId)) return;
 
-            currentCell = { col, row, value, id: cellId };
-            const promptData = gameData.categories[col]?.prompts[row];
+            const displayValue = getDisplayValue(row);
+            currentCell = { col, row, displayValue, id: cellId };
+            const promptData = round.categories[col]?.prompts[row];
 
             if (promptData) {
-                promptValue.textContent = `$${value}`;
+                promptValue.textContent = `$${displayValue}`;
                 promptText.textContent = promptData.prompt;
                 
-                // Check if this is the Daily Double
-                if (cellId === gameData.dailyDoubleCell) {
+                // Check if this is a Daily Double
+                if (round.dailyDoubleCells.includes(cellId)) {
                     showScreen('daily-double');
                 } else {
                     showScreen('prompt');
                     startTimer();
                 }
+            }
+        }
+
+        // Check if round is complete
+        function isRoundComplete() {
+            const round = getCurrentRound();
+            return round.usedCells.size >= round.totalCells;
+        }
+
+        // Advance to next round or final
+        function advanceGame() {
+            if (gameData.currentRound === 1 && gameData.hasTwoRounds) {
+                // Go to round 2
+                showScreen('round-transition');
+            } else {
+                // Go to Final Jeopardy
+                showScreen('final-title');
             }
         }
 
@@ -889,6 +1593,7 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
             uploadScreen.style.display = 'none';
             gameBoard.style.display = 'none';
             dailyDoubleScreen.classList.remove('active');
+            roundTransitionScreen.classList.remove('active');
             promptScreen.classList.remove('active');
             finalScreen.classList.remove('active');
             gameOver.classList.remove('active');
@@ -897,13 +1602,18 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
                 case 'upload':
                     uploadScreen.style.display = 'flex';
                     resetBtn.classList.add('hidden');
+                    modeIndicator.classList.add('hidden');
                     break;
                 case 'board':
                     gameBoard.style.display = 'block';
                     resetBtn.classList.remove('hidden');
+                    updateModeIndicator();
                     break;
                 case 'daily-double':
                     dailyDoubleScreen.classList.add('active');
+                    break;
+                case 'round-transition':
+                    roundTransitionScreen.classList.add('active');
                     break;
                 case 'prompt':
                     promptScreen.classList.add('active');
@@ -916,6 +1626,8 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
                     finalCategory.style.display = 'block';
                     finalCategory.textContent = gameData.finalJeopardy.category;
                     finalText.style.display = 'none';
+                    finalTimerDisplay.style.display = 'none';
+                    modeIndicator.classList.add('hidden');
                     finalScreen.classList.add('active');
                     break;
                 case 'final-prompt':
@@ -924,8 +1636,10 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
                     finalText.style.display = 'block';
                     finalText.textContent = gameData.finalJeopardy.prompt;
                     finalScreen.classList.add('active');
+                    startTimer(true);
                     break;
                 case 'final-answer':
+                    stopTimer();
                     finalTitle.style.display = 'none';
                     finalCategory.style.display = 'none';
                     finalText.style.display = 'block';
@@ -946,21 +1660,30 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
             }
         });
 
+        roundTransitionScreen.addEventListener('click', () => {
+            if (currentView === 'round-transition') {
+                gameData.currentRound = 2;
+                buildBoard();
+                showScreen('board');
+            }
+        });
+
         promptScreen.addEventListener('click', () => {
             if (currentView === 'prompt') {
                 stopTimer();
-                const promptData = gameData.categories[currentCell.col]?.prompts[currentCell.row];
+                const round = getCurrentRound();
+                const promptData = round.categories[currentCell.col]?.prompts[currentCell.row];
                 if (promptData) {
                     promptText.textContent = promptData.answer;
-                    // Keep showing the dollar amount for easier scoring
                     currentView = 'answer';
                 }
             } else if (currentView === 'answer') {
-                gameData.usedCells.add(currentCell.id);
+                const round = getCurrentRound();
+                round.usedCells.add(currentCell.id);
                 buildBoard();
 
-                if (gameData.usedCells.size >= gameData.totalCells) {
-                    showScreen('final-title');
+                if (isRoundComplete()) {
+                    advanceGame();
                 } else {
                     showScreen('board');
                 }
@@ -989,11 +1712,13 @@ Final Jeopardy,Final,This ancient wonder of the world was located in Alexandria,
         function resetGame() {
             stopTimer();
             gameData = {
-                categories: [],
+                rounds: {
+                    1: { categories: [], dailyDoubleCells: [], usedCells: new Set(), totalCells: 0 },
+                    2: { categories: [], dailyDoubleCells: [], usedCells: new Set(), totalCells: 0 }
+                },
                 finalJeopardy: { category: '', prompt: '', answer: '' },
-                usedCells: new Set(),
-                totalCells: 20,
-                dailyDoubleCell: null
+                currentRound: 1,
+                hasTwoRounds: false
             };
             currentCell = null;
             csvInput.value = '';
